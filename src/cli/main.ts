@@ -10,7 +10,7 @@ const defaults = {
   },
 };
 
-export function cli() {
+export async function cli() {
   const cliResults = defaults;
   const program = new Command()
     .name("volt")
@@ -25,13 +25,15 @@ export function cli() {
       false
     )
     .action((dir) => {
-      console.log("Creating project in directory:", dir || defaults.appName);
+      console.log(
+        "Creating project in directory: ",
+        dir || defaults.projectName
+      );
     })
     .parse(process.argv);
 
-  const options = program.opts();
-  console.log(options);
-  const cliProjectName = program.args[0] || defaults.projectName;
+  const cliProjectName = program.args[0];
+
   if (cliProjectName) {
     cliResults.projectName = cliProjectName;
   }
@@ -39,9 +41,46 @@ export function cli() {
   cliResults.flags = program.opts();
 
   if (cliResults.flags.default) {
-    console.log("Using default options...");
+    console.log(chalk.italic("Using default options..."));
     return cliResults;
   }
 
-  
+  const prompts = await p.group(
+    {
+      ...(!cliProjectName && {
+        projectName: () =>
+          p.text({
+            message: "What would you like to name your project?",
+            placeholder: defaults.projectName,
+            defaultValue: defaults.projectName,
+            // validate: (value) => {
+            //   if (value.length === 0) return "Project name cannot be empty.";
+            //   return value;
+            // },
+          }),
+      }),
+      language: () => {
+        return p.select({
+          message: "Will you be using TypeScript or JavaScript?",
+          options: [
+            { value: "typescript", label: "TypeScript" },
+            { value: "javascript", label: "JavaScript" },
+          ],
+          initialValue: "typescript",
+        });
+      },
+    },
+    {
+      onCancel: () => {
+        p.cancel(chalk.red("So sad to see you go :("));
+        process.exit(0);
+      },
+    }
+  );
+
+  console.log(prompts.projectName, prompts.language);
+
+  return cliResults;
 }
+
+cli();
