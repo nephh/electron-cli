@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "dependencies": {
     "@clack/core": "^0.3.4",
     "@clack/prompts": "^0.11.0",
@@ -12,6 +13,7 @@
     "sort-package-json": "^2.10.0"
   },
   "devDependencies": {
-    "@types/node": "^24.9.1"
+    "@types/node": "^24.9.1",
+    "tsx": "^4.20.6"
   }
 }

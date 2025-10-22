@@ -1,16 +1,25 @@
 import { Command } from "commander";
 import * as p from "@clack/prompts";
 import chalk from "chalk";
+import { validateProjectName } from "../utils/validateProjectName.js";
 
-const defaults = {
+interface CLIResults {
+  projectName: string;
+  packages: string[];
+  flags: {
+    default: boolean;
+  };
+}
+
+const defaults: CLIResults = {
   projectName: "my-electron-app",
-  packages: ["react", "tailwind", "eslint"],
+  packages: ["tailwind", "eslint"],
   flags: {
     default: false,
   },
 };
 
-export async function cli() {
+export async function cli(): Promise<CLIResults> {
   const cliResults = defaults;
   const program = new Command()
     .name("volt")
@@ -30,6 +39,11 @@ export async function cli() {
         dir || defaults.projectName
       );
     })
+    .version("0.1.0", "-v, --version", "Show the current version")
+    .addHelpText(
+      "after",
+      `This project is inspired by Vite and ${chalk.magenta("Create-T3-App")}. I hope you enjoy using it!`
+    )
     .parse(process.argv);
 
   const cliProjectName = program.args[0];
@@ -53,10 +67,7 @@ export async function cli() {
             message: "What would you like to name your project?",
             placeholder: defaults.projectName,
             defaultValue: defaults.projectName,
-            // validate: (value) => {
-            //   if (value.length === 0) return "Project name cannot be empty.";
-            //   return value;
-            // },
+            validate: validateProjectName,
           }),
       }),
       language: () => {
@@ -69,6 +80,18 @@ export async function cli() {
           initialValue: "typescript",
         });
       },
+      tailwind: () => {
+        return p.confirm({
+          message: "Would you like to include Tailwind CSS?",
+          initialValue: true,
+        });
+      },
+      eslint: () => {
+        return p.confirm({
+          message: "Would you like to include ESLint?",
+          initialValue: true,
+        });
+      },
     },
     {
       onCancel: () => {
@@ -78,9 +101,13 @@ export async function cli() {
     }
   );
 
-  console.log(prompts.projectName, prompts.language);
+  const packages = [];
+  if (prompts.tailwind) packages.push("tailwind");
+  if (prompts.eslint) packages.push("eslint");
 
-  return cliResults;
+  return {
+    projectName: prompts.projectName || cliResults.projectName,
+    packages,
+    flags: cliResults.flags,
+  };
 }
-
-cli();

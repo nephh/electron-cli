@@ -82,8 +82,8 @@ electron-cli/
 **Tasks:**
 - [x] Set up Commander for CLI parsing
 - [x] Implement basic Clack prompts
-- [ ] Create user configuration types
-- [ ] Implement project name validation
+- [x] Create user configuration types
+- [x] Implement project name validation
 - [ ] Add directory existence checks
 
 **Files to Create/Modify:**
