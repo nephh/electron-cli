@@ -1,5 +1,10 @@
 {
   "type": "module",
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "start": "node ./dist/main.js"
+  },
   "dependencies": {
     "@clack/core": "^0.3.4",
     "@clack/prompts": "^0.11.0",
@@ -13,7 +18,9 @@
     "sort-package-json": "^2.10.0"
   },
   "devDependencies": {
+    "@types/gradient-string": "^1.1.6",
     "@types/node": "^24.9.1",
+    "tsdown": "^0.15.9",
     "tsx": "^4.20.6"
   }
 }
